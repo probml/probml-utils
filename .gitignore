@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 *.egg-info/
 probml_utils/_version.py
+.coverage

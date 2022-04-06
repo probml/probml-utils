@@ -20,6 +20,7 @@ jobs:
         run: |
           pip install --no-cache-dir -U -r requirements.txt | cat
           pip install pytest pytest-cov coveralls
+          pip install -e .
           pip install --upgrade numpy
       - name: Test
         env:
