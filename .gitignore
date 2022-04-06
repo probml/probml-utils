@@ -2,4 +2,4 @@ __pycache__/
 *.vscode
 *.pyc
 *.egg-info/
-probml-utils/_version.py
+probml_utils/_version.py

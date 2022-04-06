@@ -9,4 +9,4 @@ requires = [
 	]
 
 [tool.setuptools_scm]
-write_to = "probml-utils/_version.py"
+write_to = "probml_utils/_version.py"
