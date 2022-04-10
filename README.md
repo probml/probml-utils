@@ -14,4 +14,4 @@ pip install git+https://github.com/probml/probml-utils.git
 
 ## Gotchas
 
-* `probml_utils` must be imported before `matplotlib`.
+* `probml_utils.latexify` must be imported before `matplotlib`.
