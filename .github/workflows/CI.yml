@@ -8,24 +8,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container: texlive/texlive:TL2020-historic
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
     steps:
 
       - name: Clone the reference repository
         uses: actions/checkout@v2
-      
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
 
-      # - name: Install pip
-      #   run: |
-      #     apt update
-      #     apt install python3-pip -y
+      - name: Install python and pip
+        run: |
+          apt update
+          apt install python3-pip -y
 
       - name: Install dependencies
         run: |
