@@ -1,6 +1,7 @@
 __pycache__/
 *.vscode
 *.pyc
+*.pdf
 *.egg-info/
 probml_utils/_version.py
 .coverage

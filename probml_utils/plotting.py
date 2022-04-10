@@ -53,7 +53,7 @@ def latexify(
     plt.rc("figure", figsize=(fig_width, fig_height))
 
 
-def savefig(f_name, fig_dir=DEFAULT_FIG_PATH, tight_layout=True, *args, **kwargs):
+def savefig(f_name, fig_dir=DEFAULT_FIG_PATH, tight_layout=True, tight_bbox=False, *args, **kwargs):
     if len(f_name) == 0:
         return
     fname_full = os.path.join(fig_dir, f_name)
@@ -63,5 +63,8 @@ def savefig(f_name, fig_dir=DEFAULT_FIG_PATH, tight_layout=True, *args, **kwargs
         if tight_layout:
             plt.tight_layout(pad=0)
         print("Figure size:", plt.gcf().get_size_inches())
-        plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
-        # bbox_inches="tight",  # This changes the size of the figure
+        if tight_bbox:
+            # This changes the size of the figure
+            plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
+        else:
+            plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
