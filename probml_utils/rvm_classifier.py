@@ -1,8 +1,6 @@
 # This file implements Relevance Vector Machine Classifier.
 # Author Srikar Reddy Jilugu(@always-newbie161)
 
-import superimport
-
 import numpy as np
 
 # This is a python implementation of Relevance Vector Machine Classifier,

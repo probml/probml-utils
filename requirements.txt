@@ -1,5 +1,10 @@
+jaxlib
+jax
 numpy
 matplotlib
+scikit-learn
+scipy
+distrax
 setuptools_scm[toml]
 
 setuptools_scm_git_archive

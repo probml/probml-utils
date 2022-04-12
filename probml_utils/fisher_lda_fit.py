@@ -5,7 +5,6 @@ Referenced from
 https://github.com/probml/pmtk3/blob/master/toolbox/SupervisedModels/fisherLda/fisherLdaFit.m
 Author: Srikar-Reddy-Jilugu(@always-newbie161)
 """
-import superimport
 
 import numpy as np
 
