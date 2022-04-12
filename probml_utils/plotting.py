@@ -63,6 +63,11 @@ def savefig(f_name, fig_dir=DEFAULT_FIG_PATH, tight_layout=True, tight_bbox=Fals
         if tight_layout:
             plt.tight_layout(pad=0)
         print("Figure size:", plt.gcf().get_size_inches())
+
+        # Auto create the directory if it doesn't exist
+        if not os.path.exists(fig_dir):
+            os.makedirs(fig_dir)
+
         if tight_bbox:
             # This changes the size of the figure
             plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
