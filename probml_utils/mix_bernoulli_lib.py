@@ -12,8 +12,8 @@ from jax.experimental import optimizers
 import distrax
 from distrax._src.utils import jittable
 
-from mixture_lib import MixtureSameFamily
-import pyprobml_utils as pml
+from .mixture_lib import MixtureSameFamily
+import probml_utils as pml
 
 import matplotlib.pyplot as plt
 import itertools
