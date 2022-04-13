@@ -10,6 +10,7 @@ def test_import():
     from probml_utils import fisher_lda_fit
     from probml_utils import gauss_utils
     from probml_utils import gmm_lib
+    from probml_utils import hinton_diagram
     from probml_utils import mix_bernoulli_lib
     from probml_utils import plotting
     from probml_utils import prefit_voting_classifier
