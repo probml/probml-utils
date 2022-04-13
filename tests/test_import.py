@@ -21,6 +21,7 @@ def test_import_modules():
     from probml_utils import gmm_lib
     from probml_utils import mix_bernoulli_lib
     from probml_utils import mixture_lib
+    from probml_utils import pgmpy_utils
     from probml_utils import plotting
     from probml_utils import prefit_voting_classifier
     from probml_utils import pyprobml_utils
