@@ -1,5 +1,6 @@
 jaxlib
 jax
+jupyter
 numpy
 matplotlib
 scikit-learn
