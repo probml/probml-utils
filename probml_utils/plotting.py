@@ -1,12 +1,10 @@
 import os
 import matplotlib.pyplot as plt
+import warnings
 
-DEFAULT_WIDTH = 6.0
-# GOLDEN_MEAN = (5**0.5 - 1.0) / 2.0  # Aesthetic ratio
+DEFAULT_WIDTH= 6.0
 DEFAULT_HEIGHT = 1.5
-SIZE_SMALL = 9  # Caption size in the book
-DEFAULT_FIG_PATH = "figures"
-# SPLINE_COLOR = 'gray'
+SIZE_SMALL = 9  # Caption size in the pml book
 
 
 def latexify(
@@ -47,29 +45,38 @@ def latexify(
 
     # latexify: https://nipunbatra.github.io/blog/visualisation/2014/06/02/latexify.html
     plt.rcParams["backend"] = "ps"
-    if not "NO_SAVE_FIGS" in os.environ:  # To remove latex dependecy from GitHub actions
-        plt.rc("text", usetex=True)
+    plt.rc("text", usetex=True)
     plt.rc("font", family="serif")
     plt.rc("figure", figsize=(fig_width, fig_height))
 
+def _get_fig_name(fname_full):
+    if "LATEXIFY" in os.environ:
+        return fname_full+'.pdf'
+    else:
+        return fname_full+'.png'
 
-def savefig(f_name, fig_dir=DEFAULT_FIG_PATH, tight_layout=True, tight_bbox=False, *args, **kwargs):
+def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
     if len(f_name) == 0:
         return
+    if "FIG_DIR" not in os.environ:
+        warnings.warn("set FIG_DIR environment variable to save figures")
+        return
+    
+    fig_dir = os.environ["FIG_DIR"]
+    # Auto create the directory if it doesn't exist
+    if not os.path.exists(fig_dir):
+        os.makedirs(fig_dir)
+
     fname_full = os.path.join(fig_dir, f_name)
 
-    if not "NO_SAVE_FIGS" in os.environ:
-        print("saving image to {}".format(fname_full))
-        if tight_layout:
-            plt.tight_layout(pad=0)
-        print("Figure size:", plt.gcf().get_size_inches())
-
-        # Auto create the directory if it doesn't exist
-        if not os.path.exists(fig_dir):
-            os.makedirs(fig_dir)
-
-        if tight_bbox:
-            # This changes the size of the figure
-            plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
-        else:
-            plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
+    print("saving image to {}".format(fname_full))
+    if tight_layout:
+        plt.tight_layout(pad=0)
+    print("Figure size:", plt.gcf().get_size_inches())
+    
+    fname_full = _get_fig_name(fname_full)
+    if tight_bbox:
+        # This changes the size of the figure
+        plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
+    else:
+        plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
