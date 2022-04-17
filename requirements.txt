@@ -4,9 +4,5 @@ numpy
 matplotlib
 scikit-learn
 scipy
-pgmpy
 graphviz
 distrax
-setuptools_scm[toml]
-
-setuptools_scm_git_archive

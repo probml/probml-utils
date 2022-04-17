@@ -20,9 +20,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --no-cache-dir -U -r requirements.txt | cat
-          pip install pytest pytest-cov coveralls
+          pip install --no-cache-dir -U -r requirements-dev.txt | cat
+          pip install --no-cache-dir -U -r requirements-extra.txt | cat
           pip install -e .
+          pip install pytest pytest-cov coveralls
       
       - name: Test
         env:
