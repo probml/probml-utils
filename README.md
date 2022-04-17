@@ -11,7 +11,3 @@ Utilities for probabilistic ML
 ```
 pip install git+https://github.com/probml/probml-utils.git
 ```
-
-## Gotchas
-
-* `probml_utils.latexify` must be imported before `matplotlib`.
