@@ -21,6 +21,9 @@ def latexify(
     fig_height: float, height of the figure in inches (if this is specified, height_scale_factor is ignored)
     font_size: float, font size
     """
+    if "LATEXIFY" not in os.environ:
+        warnings.warn("LATEXIFY environment variable not set, not latexifying")
+        return
     if fig_width is None:
         fig_width = DEFAULT_WIDTH / width_scale_factor
     if fig_height is None:
