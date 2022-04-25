@@ -13,10 +13,12 @@ jobs:
       - name: Clone the reference repository
         uses: actions/checkout@v2
 
-      - name: Install python and pip
+      - name: Setup pip
         run: |
           apt update
-          apt install python3-pip -y
+          apt install wget python3-distutils -y
+          wget https://bootstrap.pypa.io/get-pip.py
+          python3 get-pip.py
 
       - name: Install dependencies
         run: |
