@@ -1,5 +1,5 @@
 from ._version import version as __version__
-from .plotting import savefig, latexify
+from .plotting import savefig, latexify, _get_fig_name
 from .pyprobml_utils import (
     hinton_diagram,
     plot_ellipse,

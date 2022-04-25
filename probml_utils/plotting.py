@@ -1,8 +1,9 @@
+from logging import warning
 import os
 import matplotlib.pyplot as plt
 import warnings
 
-DEFAULT_WIDTH= 6.0
+DEFAULT_WIDTH = 6.0
 DEFAULT_HEIGHT = 1.5
 SIZE_SMALL = 9  # Caption size in the pml book
 
@@ -52,11 +53,19 @@ def latexify(
     plt.rc("font", family="serif")
     plt.rc("figure", figsize=(fig_width, fig_height))
 
+
 def _get_fig_name(fname_full):
-    if "LATEXIFY" in os.environ:
-        return fname_full+'.pdf'
+    LATEXIFY = "LATEXIFY" in os.environ
+    extention = ".pdf" if LATEXIFY else ".png"
+    if fname_full[-4:] in [".png", ".pdf", ".jpg"]:
+        fname = fname_full[:-4]
+        warnings.warn(
+            f"renaming {fname_full} to {fname}{extention} because LATEXIFY is {LATEXIFY}",
+        )
     else:
-        return fname_full+'.png'
+        fname = fname_full
+    return fname + extention
+
 
 def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
     if len(f_name) == 0:
@@ -64,7 +73,7 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
     if "FIG_DIR" not in os.environ:
         warnings.warn("set FIG_DIR environment variable to save figures")
         return
-    
+
     fig_dir = os.environ["FIG_DIR"]
     # Auto create the directory if it doesn't exist
     if not os.path.exists(fig_dir):
@@ -76,7 +85,7 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
     if tight_layout:
         plt.tight_layout(pad=0)
     print("Figure size:", plt.gcf().get_size_inches())
-    
+
     fname_full = _get_fig_name(fname_full)
     if tight_bbox:
         # This changes the size of the figure
