@@ -26,3 +26,4 @@ def test_import_modules():
     from probml_utils import prefit_voting_classifier
     from probml_utils import pyprobml_utils
     from probml_utils import rvm_classifier, rvm_regressor
+    from probml_utils import mnist_helper_tf
