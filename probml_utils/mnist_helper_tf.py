@@ -4,16 +4,9 @@ import tensorflow as tf
 from tensorflow import keras
 assert tf.__version__ >= "2.0"
 
-
-import os
-import time
 import numpy as np
-import glob
 import matplotlib.pyplot as plt
-import PIL
-import imageio
 from IPython import display
-import sklearn
 from time import time
 
 def get_dataset(FASHION=False):

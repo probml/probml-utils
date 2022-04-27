@@ -27,3 +27,6 @@ def test_import_modules():
     from probml_utils import pyprobml_utils
     from probml_utils import rvm_classifier, rvm_regressor
     from probml_utils import mnist_helper_tf
+    from probml_utils import vae_conv_mnist
+    from probml_utils import lvm_plots_utils
+
