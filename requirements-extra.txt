@@ -1,3 +1,8 @@
-pgmpy
+pgmpy  # torch will be installed by this
 imageio
 tensorflow
+einops
+torchvision
+umap-learn
+umap
+pytorch_lightning
