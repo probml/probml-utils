@@ -66,6 +66,11 @@ def _get_fig_name(fname_full):
         fname = fname_full
     return fname + extention
 
+def is_latexify_enabled():
+    '''
+    returns true if LATEXIFY environment variable is set
+    '''
+    return "LATEXIFY" in os.environ
 
 def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
     if len(f_name) == 0:
