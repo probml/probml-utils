@@ -35,12 +35,10 @@ def github_url_to_colab_url(url):
     convert github .ipynb url to colab .ipynb url
     '''
     if not (url.startswith("https://github.com")):
-        print("INVALID URL: not a Github url")
-        return 0
+        raise ValueError("INVALID URL: not a Github url")
     
     if not(url.endswith(".ipynb")):
-        print("INVALID URL: not a .ipynb file")
-        return 0
+        raise ValueError("INVALID URL: not a .ipynb file")
     
     base_url_colab = "https://colab.research.google.com/github/"
     base_url_github = "https://github.com/"
@@ -52,12 +50,10 @@ def colab_url_to_github_url(url):
     convert colab .ipynb url to github .ipynb url
     '''
     if not (url.startswith("https://colab.research.google.com/github")):
-        print("INVALID URL: not a colab github url")
-        return 0
+        raise ValueError("INVALID URL: not a colab github url")
     
     if not(url.endswith(".ipynb")):
-        print("INVALID URL: not a .ipynb file")
-        return 0
+        raise ValueError("INVALID URL: not a .ipynb file")
     
     base_url_colab = "https://colab.research.google.com/github/"
     base_url_github = "https://github.com/"
