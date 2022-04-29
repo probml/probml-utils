@@ -27,3 +27,4 @@ def test_colab_to_github():
     }
     for link in links:
         assert links[link] == colab_url_to_github_url(link)
+    return 
