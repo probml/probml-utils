@@ -32,16 +32,3 @@ def mnist_data(n_obs, rng_key=None):
     x_train = x_train.reshape((n_obs, 784))
 
     return x_train
-
-def main():
-    n_obs= 1000
-    observations = mnist_data(n_obs)  # subsample the MNIST dataset
-    n_vars = len(observations[0])
-    K, num_of_iters = 12, 10
-    n_row, n_col = 3, 4
-    bmm = BMM(K, n_vars)
-    _ = bmm.fit_em(observations, num_of_iters=num_of_iters)
-    bmm.plot(n_row, n_col, 'bmm_em_mnist')
-
-if __name__ == "__main__":
-    main()
