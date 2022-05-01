@@ -30,3 +30,5 @@ def test_import_modules():
     from probml_utils import vae_conv_mnist
     from probml_utils import lvm_plots_utils
     from probml_utils import url_utils
+    from probml_utils import mix_bernoulli_lib
+    from probml_utils import mix_bernoulli_em_mnist
