@@ -7,3 +7,7 @@ scikit-learn
 scipy
 graphviz
 distrax
+pandas
+TexSoup
+firebase_admin
+regex
