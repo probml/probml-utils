@@ -6,3 +6,5 @@ torchvision
 umap-learn
 umap
 pytorch_lightning
+TexSoup
+firebase_admin
