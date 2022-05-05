@@ -5,6 +5,7 @@ from TexSoup import TexSoup
 import regex as re
 import os
 import pandas as pd
+import firebase_admin
 from firebase_admin import credentials, firestore, initialize_app
 
 def is_dead_url(link):
@@ -68,6 +69,8 @@ def colab_url_to_github_url(url):
 def extract_scripts_name_from_caption(caption):
     """
     extract foo.py from ...{https//:<path/to/>foo.py}{foo.py}...
+    Input: caption
+    Output: ['foo.py']
     """
     py_pattern = r"\{\S+?\.py\}"
     ipynb_pattern = r"\{\S+?\.ipynb\}"
@@ -105,7 +108,7 @@ def make_url_from_chapter_no_and_script_name(
     (chapter_no = 3,script_name=iris_plot.ipynb) converted to https://github.com/probml/pyprobml/blob/master/notebooks/book1/01/iris_plot.ipynb
     """
     base_url_ipynb = os.path.join(base_url, f"book{book_no}/{int(chapter_no):02d}")
-    if ".py" in script_name:
+    if script_name.strip().endswith(".py"):
         script_name = script_name[:-3] + ".ipynb"
     if convert_to_colab_url:
         return github_url_to_colab_url(os.path.join(base_url_ipynb, script_name))
@@ -119,6 +122,9 @@ def dict_to_csv(key_value_dict, csv_name):
 
 
 def figure_url_mapping_from_lof(lof_file_path, csv_name, convert_to_colab_url = True, base_url = "https://github.com/probml/pyprobml/blob/master/notebooks", book_no=1):
+    f'''
+    create mappng of fig_no to url by parsing lof_file and save mapping in {csv_name}
+    '''
     with open(lof_file_path) as fp:
         LoF_File_Contents = fp.read()
     soup = TexSoup(LoF_File_Contents)
@@ -140,40 +146,50 @@ def figure_url_mapping_from_lof(lof_file_path, csv_name, convert_to_colab_url = 
     return url_mapping
 
 
-def non_figure_notebook_url_mapping(notebooks_path, csv_name):
+def non_figure_notebook_url_mapping(notebooks_path, csv_name, convert_to_colab_url = True, base_url = "https://github.com/probml/pyprobml/blob/master/notebooks", book_no=1):
+    f'''
+    create mapping of notebook_name to url using notebooks in given path - {notebook_path} and save mapping in {csv_name}
+    '''
     url_mapping = {}
     for notebook_path in notebooks_path:
         parts = notebook_path.split("/")
         script_name = parts[-1]
         chapter_no = parts[-2]
-        book_no = parts[-3]
-        url = make_url_from_chapter_no_and_script_name(chapter_no,script_name)
+        url = make_url_from_chapter_no_and_script_name(chapter_no,script_name,convert_to_colab_url=convert_to_colab_url, base_url=base_url, book_no=book_no)
         key = script_name.split(".")[0] # remove extension
         url_mapping[key] = url
     if csv_name:
         dict_to_csv(url_mapping,csv_name)
-    print(f"Mapping of {len(url_mapping)} urls is saved in {csv_name}")
+        print(f"Mapping of {len(url_mapping)} urls is saved in {csv_name}")
     return url_mapping
 
-def upload_urls_to_firestore(key_path,csv_path,level1_collection = "figures",
-                             level2_document = None ,level3_collection = None):
-    
-    assert level2_document in ["book1", "book2"], "Incorrect level2_document value: possible values of level2_document should be ['book1', 'book2']"
-
+def create_firestore_db(key_path):
     cred = credentials.Certificate(key_path)
     try:
         default_app = initialize_app(cred) #this should called only once
     except ValueError:
-        pass
+        firebase_admin.delete_app(firebase_admin.get_app()) # delete current firebase app
+        default_app = initialize_app(cred) 
     db = firestore.client()
+    return db
+
+def upload_urls_to_firestore(key_path,csv_path,level1_collection = "figures",
+                             level2_document = None ,level3_collection = None):
+    
+    f'''
+    extract key-value pair from {csv_path} and upload in firestore  database
+    '''
+    assert level2_document in ["book1", "book2"], "Incorrect level2_document value: possible values of level2_document should be ['book1', 'book2']"
+
+    db = create_firestore_db(key_path)
 
     collection = db.collection(level1_collection).document(level2_document).collection(level3_collection)
     
-    df = pd.read_csv(csv_path)
+    df = pd.read_csv(csv_path, dtype = str) # put dtype=str otherwise fig_no 3.30 will converted to 3.3
     
     assert sorted(df.columns) ==  ["key","url"], f"columns of {csv_path} should be only 'key' and 'url'" 
     
     print("Uploading...")
     for (key,url) in list(zip(df["key"], df["url"])):
-        collection.document(str(key)).set({"link": url})
+        collection.document(key).set({"link": url})
     print(f"{len(df)} urls uploaded!")
