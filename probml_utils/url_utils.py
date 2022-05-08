@@ -63,8 +63,21 @@ def colab_url_to_github_url(url):
     
     base_url_colab = "https://colab.research.google.com/github/"
     base_url_github = "https://github.com/"
-    
     return url.replace(base_url_colab,base_url_github)
+
+def colab_to_githubraw_url(url):
+    '''
+    convert colab .ipynb url to github raw .ipynb url
+    '''
+    if not (url.startswith("https://colab.research.google.com/github")):
+        raise ValueError("INVALID URL: not a colab github url")
+    
+    if not(url.endswith(".ipynb")):
+        raise ValueError("INVALID URL: not a .ipynb file")
+    
+    base_url_colab = "https://colab.research.google.com/github/"
+    base_url_githubraw = "https://raw.githubusercontent.com/"
+    return url.replace(base_url_colab,base_url_githubraw).replace("blob/","").replace("tree/","")
 
 def extract_scripts_name_from_caption(caption):
     """
@@ -148,7 +161,7 @@ def figure_url_mapping_from_lof(lof_file_path, csv_name, convert_to_colab_url = 
 
 def non_figure_notebook_url_mapping(notebooks_path, csv_name, convert_to_colab_url = True, base_url = "https://github.com/probml/pyprobml/blob/master/notebooks", book_no=1):
     f'''
-    create mapping of notebook_name to url using notebooks in given path - {notebook_path} and save mapping in {csv_name}
+    create mapping of notebook_name to url using notebooks in given path - {notebooks_path} and save mapping in {csv_name}
     '''
     url_mapping = {}
     for notebook_path in notebooks_path:
