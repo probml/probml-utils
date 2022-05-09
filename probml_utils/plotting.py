@@ -97,3 +97,14 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
         plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
     else:
         plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
+    
+    if "DUAL_SAVE" in os.environ:
+        if fname_full.endswith(".pdf"):
+            fname_full = fname_full[:-4] + ".png"
+        else:
+            fname_full = fname_full[:-4] + ".pdf"
+        if tight_bbox:
+            # This changes the size of the figure
+            plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
+        else:
+            plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
