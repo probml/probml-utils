@@ -32,3 +32,6 @@ def test_import_modules():
     from probml_utils import url_utils
     from probml_utils import mix_bernoulli_lib
     from probml_utils import mix_bernoulli_em_mnist
+    from probml_utils import vae_celeba_lightning
+    from probml_utils import mfa_celeba_helpers
+    from probml_utils import download_celeba

@@ -6,3 +6,4 @@ __pycache__/
 *.egg-info/
 probml_utils/_version.py
 .coverage
+data.py
