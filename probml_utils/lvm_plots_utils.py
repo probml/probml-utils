@@ -1,11 +1,27 @@
 import umap
+import os
 from typing import Callable, Tuple
-import torch
+try:
+    import torch
+except ModuleNotFoundError:
+    os.system("pip install torch")
+    import torch
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from einops import rearrange
-from torchvision.utils import make_grid
+
+try:
+    from einops import rearrange
+except:
+    os.system("pip install einops")
+    from einops import rearrange
+    
+try:
+    from torchvision.utils import make_grid
+except:
+    os.system("pip install torchvision")
+    from torchvision.utils import make_grid
+
 from scipy.stats import truncnorm
 from scipy.stats import norm
 from sklearn.manifold import TSNE

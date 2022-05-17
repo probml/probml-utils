@@ -1,9 +1,13 @@
 # Mixture of Factor analyzers for CelebA images
 # from
 # https://github.com/eitanrich/gans-n-gmms
-
+import os
 import numpy as np
-import torch
+try:
+    import torch
+except ModuleNotFoundError:
+    os.system("pip install torch")
+    import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 import time
 import math

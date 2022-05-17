@@ -1,16 +1,27 @@
-"""
-Install pytorch lightning and einops
+import os
+try:
+    import torch
+except ModuleNotFoundError:
+    os.system("pip install torch")
+    import torch
+try:
+    import torchvision.transforms as transforms
+except:
+    os.system("pip install torchvision'")
+    import torchvision.transforms as transforms
 
-pip install pytorch_lightning einops
-"""
-import torch
 import torch.nn as nn
 import numpy  as np 
 from torch.nn import functional as F
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
-from pytorch_lightning import LightningModule, Trainer
+try:
+    from pytorch_lightning import LightningModule, Trainer
+except:
+    os.system("pip install pytorch-lightning")
+    from pytorch_lightning import LightningModule, Trainer
+
 from argparse import ArgumentParser
 
 class ConvVAEModule(nn.Module):

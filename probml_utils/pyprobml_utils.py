@@ -23,43 +23,43 @@ def test():
 
 # https://stackoverflow.com/questions/10685495/reducing-the-size-of-pdf-figure-file-in-matplotlib
 
+# save_fig is now depricated
+# def save_fig(fname, *args, **kwargs):
+#     # figdir = '../figures' # default directory one above where code lives
+#     current_dir = get_current_path()
+#     figdir = os.path.join(current_dir, "..", "figures")
 
-def save_fig(fname, *args, **kwargs):
-    # figdir = '../figures' # default directory one above where code lives
-    current_dir = get_current_path()
-    figdir = os.path.join(current_dir, "..", "figures")
+#     if not os.path.exists(figdir):
+#         print("making directory {}".format(figdir))
+#         os.mkdir(figdir)
 
-    if not os.path.exists(figdir):
-        print("making directory {}".format(figdir))
-        os.mkdir(figdir)
+#     fname_full = os.path.join(figdir, fname)
+#     print("saving image to {}".format(fname_full))
+#     # plt.tight_layout()
 
-    fname_full = os.path.join(figdir, fname)
-    print("saving image to {}".format(fname_full))
-    # plt.tight_layout()
+#     # use TrueType fonts so they are embedded
+#     # https://stackoverflow.com/questions/9054884/how-to-embed-fonts-in-pdfs-produced-by-matplotlib
+#     # https://jdhao.github.io/2018/01/18/mpl-plotting-notes-201801/
+#     plt.rcParams["pdf.fonttype"] = 42
 
-    # use TrueType fonts so they are embedded
-    # https://stackoverflow.com/questions/9054884/how-to-embed-fonts-in-pdfs-produced-by-matplotlib
-    # https://jdhao.github.io/2018/01/18/mpl-plotting-notes-201801/
-    plt.rcParams["pdf.fonttype"] = 42
+#     # Font sizes
+#     SIZE_SMALL = 12
+#     SIZE_MEDIUM = 14
+#     SIZE_LARGE = 24
+#     # https://stackoverflow.com/a/39566040
+#     plt.rc("font", size=SIZE_SMALL)  # controls default text sizes
+#     plt.rc("axes", titlesize=SIZE_SMALL)  # fontsize of the axes title
+#     plt.rc("axes", labelsize=SIZE_SMALL)  # fontsize of the x and y labels
+#     plt.rc("xtick", labelsize=SIZE_SMALL)  # fontsize of the tick labels
+#     plt.rc("ytick", labelsize=SIZE_SMALL)  # fontsize of the tick labels
+#     plt.rc("legend", fontsize=SIZE_SMALL)  # legend fontsize
+#     plt.rc("figure", titlesize=SIZE_LARGE)  # fontsize of the figure title
 
-    # Font sizes
-    SIZE_SMALL = 12
-    SIZE_MEDIUM = 14
-    SIZE_LARGE = 24
-    # https://stackoverflow.com/a/39566040
-    plt.rc("font", size=SIZE_SMALL)  # controls default text sizes
-    plt.rc("axes", titlesize=SIZE_SMALL)  # fontsize of the axes title
-    plt.rc("axes", labelsize=SIZE_SMALL)  # fontsize of the x and y labels
-    plt.rc("xtick", labelsize=SIZE_SMALL)  # fontsize of the tick labels
-    plt.rc("ytick", labelsize=SIZE_SMALL)  # fontsize of the tick labels
-    plt.rc("legend", fontsize=SIZE_SMALL)  # legend fontsize
-    plt.rc("figure", titlesize=SIZE_LARGE)  # fontsize of the figure title
-
-    plt.savefig(fname_full, *args, **kwargs)
+#     plt.savefig(fname_full, *args, **kwargs)
 
 
-def savefig(fname, *args, **kwargs):
-    save_fig(fname, *args, **kwargs)
+# def savefig(fname, *args, **kwargs):
+#     save_fig(fname, *args, **kwargs)
 
 
 from matplotlib.patches import Ellipse, transforms
