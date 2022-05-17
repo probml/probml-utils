@@ -2,9 +2,14 @@
 Fits Bernoulli mixture model for mnist digits using em algorithm
 Author: Meduri Venkata Shivaditya, Aleyna Kara(@karalleyna)
 '''
+import os
+try:
+    import tensorflow as tf
+except ModuleNotFoundError:
+    os.system("pip install tensorflow")
+    import tensorflow as tf
 
 from jax.random import PRNGKey, randint
-import tensorflow as tf
 from probml_utils.mix_bernoulli_lib import BMM
 
 def mnist_data(n_obs, rng_key=None):

@@ -1,6 +1,11 @@
 # Helper functions for DNN demos related to mnist images
+import os
+try:
+    import tensorflow as tf
+except ModuleNotFoundError:
+    os.system("pip install tensorflow")
+    import tensorflow as tf
 
-import tensorflow as tf
 from tensorflow import keras
 assert tf.__version__ >= "2.0"
 

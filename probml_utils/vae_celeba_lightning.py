@@ -16,14 +16,29 @@ rm kaggle.json
 to copy kaggle.json into a folder first 
 """
 import os
-os.system("wget -q https://raw.githubusercontent.com/sayantanauddy/vae_lightning/main/data.py")
 
-import torch
+try:
+    import torch
+except ModuleNotFoundError:
+    os.system("pip install torch")
+    import torch
+try:
+    import torchvision.transforms as transforms
+except:
+    os.system("pip install torchvision")
+    import torchvision.transforms as transforms
+
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision.transforms as transforms
-from pytorch_lightning import LightningModule, Trainer
-from data import  CelebADataModule
+
+try:
+    from pytorch_lightning import LightningModule, Trainer
+except:
+    os.system("pip install pytorch-lightning")
+    from pytorch_lightning import LightningModule, Trainer
+
+from probml_utils.vae_lightning_data import  CelebADataModule
+
 from argparse import ArgumentParser
 
 

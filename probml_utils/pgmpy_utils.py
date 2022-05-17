@@ -3,8 +3,13 @@
 
 #!pip install pgmpy
 #!pip install graphviz
-
-import pgmpy
+import os
+try:
+  import pgmpy
+except:
+  os.system("pip install pgmpy")
+  import pgmpy
+  
 import numpy as np
 import itertools
 from graphviz import Digraph
