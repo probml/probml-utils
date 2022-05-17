@@ -6,6 +6,7 @@
 
 # We create a dataloader with the required image size,
 # and thus force the code to first download the data locally.
+
 import os
 from absl import app
 from absl import flags
@@ -17,6 +18,7 @@ import pandas as pd
 import os
 import PIL
 import glob
+
 try:
     import torch
 except ModuleNotFoundError:
@@ -31,6 +33,7 @@ except:
     import torchvision
 
 from torchvision import utils, io
+
 from torchvision.datasets.utils import verify_str_arg
 
 import pytorch_lightning as pl

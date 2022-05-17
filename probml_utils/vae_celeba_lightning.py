@@ -38,6 +38,7 @@ except:
     from pytorch_lightning import LightningModule, Trainer
 
 from probml_utils.vae_lightning_data import  CelebADataModule
+
 from argparse import ArgumentParser
 
 
