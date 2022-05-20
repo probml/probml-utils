@@ -35,3 +35,4 @@ def test_import_modules():
     from probml_utils import vae_celeba_lightning
     from probml_utils import mfa_celeba_helpers
     from probml_utils import download_celeba
+    from probml_utils import ae_mnist_conv
