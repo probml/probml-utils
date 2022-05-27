@@ -1,7 +1,7 @@
 try:
     import torch
 except ModuleNotFoundError:
-    os.system("pip install torch")
+    os.system("pip install -qq torch")
     import torch
 import numpy as np
 import torch.nn as nn
@@ -9,7 +9,7 @@ import torch.nn as nn
 try:
     from torchvision.datasets import MNIST
 except:
-    os.system("pip install torchvision")
+    os.system("pip install -qq torchvision")
     from torchvision.datasets import MNIST
 import torch.nn.functional as F
 import torchvision.transforms as transforms
@@ -18,12 +18,12 @@ from torch.utils.data import DataLoader
 try:
     from pytorch_lightning import LightningModule, Trainer
 except:
-    os.system("pip install pytorch-lightning")
+    os.system("pip install -qq pytorch-lightning")
     from pytorch_lightning import LightningModule, Trainer
 try:
     from einops import rearrange
 except:
-    os.system("pip install einops")
+    os.system("pip install -qq einops")
     from einops import rearrange
 from argparse import ArgumentParser
 
