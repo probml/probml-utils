@@ -1,5 +1,9 @@
-import umap
 import os
+try:
+    import umap
+except ModuleNotFoundError:
+    os.system("pip install umap-learn")
+    import umap
 from typing import Callable, Tuple
 try:
     import torch
@@ -12,13 +16,13 @@ import matplotlib.pyplot as plt
 
 try:
     from einops import rearrange
-except:
+except ModuleNotFoundError:
     os.system("pip install einops")
     from einops import rearrange
     
 try:
     from torchvision.utils import make_grid
-except:
+except ModuleNotFoundError:
     os.system("pip install torchvision")
     from torchvision.utils import make_grid
 

@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/probml/probml-utils/badge.svg?branch=main)](https://coveralls.io/github/probml/probml-utils?branch=main)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Utilities for probabilistic ML
+This is a pip-installable repo of common utilities used by various demos in [pyprobml](https://github.com/probml/pyprobml).
 
 ## Installation
 

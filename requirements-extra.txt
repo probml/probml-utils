@@ -4,5 +4,4 @@ tensorflow
 einops
 torchvision
 umap-learn
-umap
 pytorch_lightning
