@@ -11,4 +11,4 @@ pandas
 TexSoup
 firebase_admin
 regex
-umap
+umap-learn
