@@ -9,7 +9,7 @@ def test_save_latexified():
     pml.latexify(width_scale_factor=2, fig_height=1.5)
     plt.plot([1.0, 2.0], [3.0, 4.0])
     pml.savefig("test")
-    assert os.path.exists("figures/test.pdf")
+    assert os.path.exists("figures/test_latexified.pdf")
     
 def test_save_normal():
     if "LATEXIFY" in os.environ:
