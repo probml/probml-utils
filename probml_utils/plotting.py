@@ -54,9 +54,16 @@ def latexify(
     plt.rc("figure", figsize=(fig_width, fig_height))
 
 
+def is_latexify_enabled():
+    '''
+    returns true if LATEXIFY environment variable is set
+    '''
+    return "LATEXIFY" in os.environ
+
 def _get_fig_name(fname_full):
+    fname_full = fname_full.replace("_latexified","")
     LATEXIFY = "LATEXIFY" in os.environ
-    extention = ".pdf" if LATEXIFY else ".png"
+    extention = "_latexified.pdf" if LATEXIFY else ".png"
     if fname_full[-4:] in [".png", ".pdf", ".jpg"]:
         fname = fname_full[:-4]
         warnings.warn(
@@ -66,13 +73,7 @@ def _get_fig_name(fname_full):
         fname = fname_full
     return fname + extention
 
-def is_latexify_enabled():
-    '''
-    returns true if LATEXIFY environment variable is set
-    '''
-    return "LATEXIFY" in os.environ
-
-def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
+def savefig(f_name, tight_layout=True, tight_bbox=False, pad_inches = 0.0, *args, **kwargs):
     if len(f_name) == 0:
         return
     if "FIG_DIR" not in os.environ:
@@ -88,15 +89,15 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
 
     print("saving image to {}".format(fname_full))
     if tight_layout:
-        plt.tight_layout(pad=0)
+        plt.tight_layout(pad=pad_inches)
     print("Figure size:", plt.gcf().get_size_inches())
 
     fname_full = _get_fig_name(fname_full)
     if tight_bbox:
         # This changes the size of the figure
-        plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
+        plt.savefig(fname_full, pad_inches=pad_inches, bbox_inches="tight", *args, **kwargs)
     else:
-        plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
+        plt.savefig(fname_full, pad_inches=pad_inches, *args, **kwargs)
     
     if "DUAL_SAVE" in os.environ:
         if fname_full.endswith(".pdf"):
@@ -105,6 +106,6 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, *args, **kwargs):
             fname_full = fname_full[:-4] + ".pdf"
         if tight_bbox:
             # This changes the size of the figure
-            plt.savefig(fname_full, pad_inches=0.0, bbox_inches="tight", *args, **kwargs)
+            plt.savefig(fname_full, pad_inches=pad_inches, bbox_inches="tight", *args, **kwargs)
         else:
-            plt.savefig(fname_full, pad_inches=0.0, *args, **kwargs)
+            plt.savefig(fname_full, pad_inches=pad_inches, *args, **kwargs)
