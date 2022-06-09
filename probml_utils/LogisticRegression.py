@@ -2,8 +2,6 @@ import jax
 import jax.numpy as jnp
 from jaxopt import LBFGS
 
-
-@jax.jit
 def binary_loss_function(weights, auxs):
     """
     Arguments:
@@ -27,7 +25,6 @@ def binary_loss_function(weights, auxs):
     return -((cost0 + cost1) / m) + regularization_cost, auxs
 
 
-@jax.jit
 def multi_loss_function(weights, auxs):
     """
     Arguments:
@@ -50,7 +47,7 @@ def multi_loss_function(weights, auxs):
     return (-jnp.sum(y * jnp.log(hypothesis_x + 1e-7)) / m + regularization_cost), auxs
 
 
-def fit(X, y, max_iter=None, learning_rate=0.1, lambd=1, random_key=1, tol=1e-8):
+def fit(X, y, max_iter=None, lambd=1, random_key=0, tol=1e-8):
     """
     Arguments:
         X : training dataset, shape = (no. of examples, no. of features)
@@ -98,31 +95,46 @@ def fit(X, y, max_iter=None, learning_rate=0.1, lambd=1, random_key=1, tol=1e-8)
         return weights, weights[0], weights[1:]
 
 
-def predict(weights, x):
+def predict_proba(weights, x):
     """
     Arguments:
         weights : Trained Parameter, shape = (no. of features, no. of classes)
         x : int or array->shape(no. of examples, no. of features)
     Return:
-        pred_y : predicted class
+        probs_y : probability of class
     """
     x = jnp.concatenate([jnp.ones([x.shape[0], 1]), x], axis=1)
     z = jnp.dot(x, weights)
     if len(z.shape) > 1:
         probs_y = jax.nn.softmax(z, axis=1)
-        pred_y = jnp.argmax(probs_y, axis=1)
     else:
         probs_y = jax.nn.sigmoid(z)
-        pred_y = (probs_y > 0.5).astype(int)
+    return probs_y
+
+def predict(weights, x, threshold = 0.5):
+    """
+    Arguments:
+        weights : Trained Parameter, shape = (no. of features, no. of classes)
+        x : int or array->shape(no. of examples, no. of features)
+        threshold : default 0.5, threshold value for binary classification
+    Return:
+        pred_y : predicted class
+    """
+    probs_y = predict_proba(weights, x)
+    if len(probs_y.shape) > 1:
+        pred_y = jnp.argmax(probs_y, axis=1)
+    else:
+        pred_y = (probs_y > threshold).astype(int)
     return pred_y
 
 
-def score(weights, x, y):
+def score(weights, x, y, threshold = 0.5):
     """
     Arguments:
         weights : Trained Parameter, shape = (no. of features, no. of classes)
         x : int or array->shape(no. of examples, no. of features)
         y : int or array->shape(no. of examples,)
+        threshold : default 0.5, threshold value for binary classification
     """
-    y_pred = predict(weights, x)
+    y_pred = predict(weights, x, threshold)
     return jnp.sum(y_pred == y) / len(x)
