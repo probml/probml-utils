@@ -2577,10 +2577,10 @@ def sgd(params, lr, batch_size):
             param.grad.zero_()
 
 def get_dataloader_workers():
-    """Use 4 processes to read the data.
+    """Use 2 processes to read the data.
 
     Defined in :numref:`sec_utils`"""
-    return 4
+    return 2
 
 def load_data_fashion_mnist(batch_size, resize=None):
     """Download the Fashion-MNIST dataset and then load it into memory.

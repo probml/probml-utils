@@ -86,7 +86,7 @@ def extract_scripts_name_from_caption(caption):
     Output: ['foo.py']
     """
     py_pattern = r"\{\S+?\.py\}"
-    ipynb_pattern = r"\{\S+?\.ipynb\}"
+    ipynb_pattern = r"\{\S+?\.ipynb\}"          
 
     matches = re.findall(py_pattern, str(caption)) + re.findall(ipynb_pattern, str(caption))
     extracted_scripts = []
@@ -128,9 +128,9 @@ def make_url_from_chapter_no_and_script_name(
     return os.path.join(base_url_ipynb, script_name)
 
 
-def dict_to_csv(key_value_dict, csv_name):    
-    df = pd.DataFrame(key_value_dict.items(), columns=["key", "url"])
-    df.set_index(keys=["key"], inplace=True, drop=True)
+def dict_to_csv(key_value_dict, csv_name, columns=["key", "url"]):    
+    df = pd.DataFrame(key_value_dict.items(), columns= columns)
+    df.set_index(keys=columns[0], inplace=True, drop=True)
     df.to_csv(csv_name)
 
 
