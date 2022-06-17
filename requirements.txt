@@ -13,3 +13,4 @@ TexSoup
 firebase_admin
 regex
 umap-learn
+arviz
