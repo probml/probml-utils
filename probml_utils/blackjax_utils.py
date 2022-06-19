@@ -41,10 +41,25 @@ def inference_loop_multiple_chains(rng_key, kernel, initial_states, num_samples,
     '''
     def one_step(states, rng_key):
         keys = jax.random.split(rng_key, num_chains)
-        states, info = jax.vmap(kernel)(keys, states) 
-        return states, {"states": states, "info": info}
+        states, infos = jax.vmap(kernel)(keys, states) 
+        return states, (states, infos)
 
     keys = jax.random.split(rng_key, num_samples)
-    _, states_and_info = jax.lax.scan(one_step, initial_states, keys)
+    _, (states, infos) = jax.lax.scan(one_step, initial_states, keys)
 
-    return states_and_info
+    return (states, infos)
+
+def inference_loop(rng_key, kernel, initial_state, num_samples):
+    '''
+    returns (states, info)
+    Visit this page for more info: https://blackjax-devs.github.io/blackjax/examples/Introduction.html
+    '''
+    @jax.jit
+    def one_step(state, rng_key):
+        state, info = kernel(rng_key, state)
+        return state, (state, info)
+
+    keys = jax.random.split(rng_key, num_samples)
+    _, (states, infos) = jax.lax.scan(one_step, initial_state, keys)
+
+    return (states, infos)
