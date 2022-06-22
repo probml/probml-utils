@@ -1,4 +1,5 @@
 import jax.numpy as jnp
+
 from jax import jit, vmap, random, lax
 from collections import namedtuple
 from functools import partial

@@ -1,5 +1,6 @@
 jaxlib
 jax
+jaxopt
 jupyter
 numpy
 matplotlib
@@ -12,3 +13,4 @@ TexSoup
 firebase_admin
 regex
 umap-learn
+arviz
