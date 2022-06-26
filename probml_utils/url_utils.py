@@ -79,6 +79,10 @@ def colab_to_githubraw_url(url):
     base_url_githubraw = "https://raw.githubusercontent.com/"
     return url.replace(base_url_colab,base_url_githubraw).replace("blob/","").replace("tree/","")
 
+def github_to_rawcontent_url(github_url):
+    return github_url.replace("github.com","raw.githubusercontent.com").replace("blob/","")
+
+
 def extract_scripts_name_from_caption(caption):
     """
     extract foo.py from ...{https//:<path/to/>foo.py}{foo.py}...
@@ -97,35 +101,47 @@ def extract_scripts_name_from_caption(caption):
     return extracted_scripts
 
 
+
 def make_url_from_fig_no_and_script_name(
-    fig_no, script_name, base_url="https://github.com/probml/pyprobml/blob/master/notebooks", book_no=1, convert_to_colab_url = True
+    fig_no, script_name, base_url="https://github.com/probml/pyprobml/blob/master/notebooks", book_no=1, convert_to_which_url = "github", 
 ):
     """
     create mapping between fig_no and actual_url path
     (fig_no=1.3,script_name=iris_plot.ipynb) converted to https://github.com/probml/pyprobml/blob/master/notebooks/book1/01/iris_plot.ipynb
+    convert_to_which_url = Union["github","colab","gihub-raw"]
     """
     chapter_no = int(fig_no.strip().split(".")[0])
     base_url_ipynb = os.path.join(base_url, f"book{book_no}/{chapter_no:02d}")
     if ".py" in script_name:
         script_name = script_name[:-3] + ".ipynb"
-    if convert_to_colab_url:
-        return github_url_to_colab_url(os.path.join(base_url_ipynb, script_name))
-    return os.path.join(base_url_ipynb, script_name)
+        
+    github_url = os.path.join(base_url_ipynb, script_name)
+    if convert_to_which_url == "colab":
+        return github_url_to_colab_url(github_url)
+    elif convert_to_which_url == "gihub-raw":
+        return github_to_rawcontent_url(github_url)
+    return github_url
 
 
-def make_url_from_chapter_no_and_script_name(
-    chapter_no, script_name, base_url="https://github.com/probml/pyprobml/blob/master/notebooks", book_no=1, convert_to_colab_url = True
-):
+
+def make_url_from_chapter_no_and_script_name(chapter_no, script_name, 
+                                            base_url="https://github.com/probml/pyprobml/blob/master/notebooks", 
+                                             book_no=1, convert_to_which_url = "github"):
     """
     create mapping between chapter_no and actual_url path
     (chapter_no = 3,script_name=iris_plot.ipynb) converted to https://github.com/probml/pyprobml/blob/master/notebooks/book1/01/iris_plot.ipynb
+    convert_to_which_url = Union["github","colab","gihub-raw"]
     """
     base_url_ipynb = os.path.join(base_url, f"book{book_no}/{int(chapter_no):02d}")
     if script_name.strip().endswith(".py"):
         script_name = script_name[:-3] + ".ipynb"
-    if convert_to_colab_url:
-        return github_url_to_colab_url(os.path.join(base_url_ipynb, script_name))
-    return os.path.join(base_url_ipynb, script_name)
+    github_url = os.path.join(base_url_ipynb, script_name)
+    
+    if convert_to_which_url == "colab":
+        return github_url_to_colab_url(github_url)
+    elif convert_to_which_url == "github-raw":
+        return github_to_rawcontent_url(github_url)
+    return github_url
 
 
 def dict_to_csv(key_value_dict, csv_name, columns=["key", "url"]):    
