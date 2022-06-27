@@ -5,9 +5,11 @@ import jax
 import jax.numpy as jnp
 from jax.scipy import special
 from jax.numpy.linalg import inv, det
-from jax.ops import index_update            
+
+# from jax.ops import index_update #deprecated
 from sklearn.exceptions import NotFittedError
 from tensorflow_probability.substrates import jax as tfp
+
 tfd = tfp.distributions
 
 
@@ -17,16 +19,16 @@ class VBMixture:
     field approximation to the posterior in the form
                             q(h) = q(θ) ∏n qn(z_n)
     Where θ are the model parameters of the mixture of Gaussians and zn are the
-    latent variables. 
+    latent variables.
 
     For more information see: Example: VBEM for a GMM
     """
+
     def __init__(self):
         self.fitted = False
         self.compute_responsibilities = jax.jit(self._compute_responsibilities)
         self.posterior_params = jax.jit(self._posterior_params)
         self.gmm_lower_bound = jax.jit(self._gmm_lower_bound)
-    
 
     def _compute_e_log_pi(self, alpha):
         """
@@ -35,7 +37,6 @@ class VBMixture:
         """
         return special.digamma(alpha) - special.digamma(alpha.sum())
 
-
     def _compute_e_log_lambda(self, X, eta, W):
         """
         Compute the expected value of every log det Lambda_k, i.e,
@@ -43,7 +44,6 @@ class VBMixture:
         """
         _, M = X.shape
         return special.digamma((eta + 1 - M) / 2) + M * jnp.log(2) + det(W)
-
 
     def expected_values(self, hist=None):
         """
@@ -76,7 +76,6 @@ class VBMixture:
 
         return pi_k, mu_k, Sigma_k
 
-
     def _compute_m_statistics(self, X, r):
         # We add term to avoid division by zero
         Nk = r.sum(axis=0) + 1e-6
@@ -86,7 +85,6 @@ class VBMixture:
 
         return Nk, xbar_k, Sk
 
-
     def _compute_responsibilities(self, X, alpha, beta, eta, m, W):
         """
         Compute model responsibilities
@@ -95,15 +93,16 @@ class VBMixture:
         N, M = X.shape
         E_logpi = self._compute_e_log_pi(alpha)
         E_logLambda = self._compute_e_log_lambda(X, eta, W)
-        diffk = (X[:, None, :] - m.T)
+        diffk = X[:, None, :] - m.T
         mpart = jnp.einsum("ijk,jkk->ijk", diffk, W)
         E_mahal = eta * jnp.einsum("ijk,ijk->ij", mpart, diffk) + M / beta
 
-        log_rho_nk = E_logpi + E_logLambda / 2 - M / 2 * jnp.log(2 * jnp.pi) - E_mahal / 2
+        log_rho_nk = (
+            E_logpi + E_logLambda / 2 - M / 2 * jnp.log(2 * jnp.pi) - E_mahal / 2
+        )
 
         r = jax.nn.softmax(log_rho_nk)
         return r
-
 
     def _posterior_params(self, X, r, alpha, beta, eta, m, W):
         """
@@ -119,28 +118,30 @@ class VBMixture:
         m_k = (beta * m + Nk * xbar_k) / beta_k
         C0 = (beta * Nk) / (beta + Nk)
         f0 = (xbar_k - m)[:, None, :]
-        W_k_inv = inv(W) + (Nk * Sk).T + C0[:, None, None] * jnp.einsum("ijk,jik->kij", f0, f0)
+        W_k_inv = (
+            inv(W)
+            + (Nk * Sk).T
+            + C0[:, None, None] * jnp.einsum("ijk,jik->kij", f0, f0)
+        )
         W_k = inv(W_k_inv)
 
         return alpha_k, beta_k, eta_k, m_k, W_k
-
 
     def compute_log_C(self, alpha):
         """
         Compute the log-transformation of the dirichlet
         normalization constant
-        
+
         Parameters
         ----------
         alpha: np.array(K,)
             {αi}i components of a dirichlet
-            
+
         Returns
         -------
         float: log(C(α)) = log Γ(Σi α_i) - Σi Γ(alpha_i)
         """
         return special.gammaln(alpha.sum()) - special.gammaln(alpha).sum()
-
 
     def E1(self, X, r, beta, eta, m, W):
         """
@@ -152,10 +153,19 @@ class VBMixture:
         Tr_Sk_Wk = jnp.einsum("ijm,mji->m", Sk, W)
         diffk = xbar_k - m
         mahal_xbar = jnp.einsum("im,mij,jm->m", diffk, W, diffk)
-        
-        E_val = Nk * (log_hat_Λ - M / beta - eta * Tr_Sk_Wk
-                    - eta * mahal_xbar - M * jnp.log(2 * jnp.pi)) / 2
-        
+
+        E_val = (
+            Nk
+            * (
+                log_hat_Λ
+                - M / beta
+                - eta * Tr_Sk_Wk
+                - eta * mahal_xbar
+                - M * jnp.log(2 * jnp.pi)
+            )
+            / 2
+        )
+
         return E_val.sum()
 
     def E2(self, r, alpha):
@@ -164,7 +174,7 @@ class VBMixture:
         """
         log_hat_π = self._compute_e_log_pi(alpha)
         E_val = jnp.einsum("ik,k->", r, log_hat_π)
-        
+
         return E_val.sum()
 
     def E3(self, alpha, alpha_0):
@@ -173,9 +183,8 @@ class VBMixture:
         """
         log_C_α0 = self.compute_log_C(alpha_0)
         log_hat_π = self._compute_e_log_pi(alpha)
-        
-        return log_C_α0 + (alpha_0[0] - 1) * log_hat_π.sum()
 
+        return log_C_α0 + (alpha_0[0] - 1) * log_hat_π.sum()
 
     def E4(self, X, beta, eta, m, W, beta_0, eta_0, m_0, W_0):
         """
@@ -190,17 +199,20 @@ class VBMixture:
         log_hat_Λ = self._compute_e_log_lambda(X, eta, W)
         mahal_mk = jnp.einsum("im,mij,jm->m", diffk, W, diffk)
         Tr_W0inv_W = jnp.einsum("mij,mij->m", inv(W_0), W)
-        
-        term1 = (M * jnp.log(beta_0[0] / (jnp.pi * 2)).sum()
-                + log_hat_Λ - M * beta_0 / beta - beta_0 * eta * mahal_mk).sum() / 2
+
+        term1 = (
+            M * jnp.log(beta_0[0] / (jnp.pi * 2)).sum()
+            + log_hat_Λ
+            - M * beta_0 / beta
+            - beta_0 * eta * mahal_mk
+        ).sum() / 2
         term2 = K * wishart.log_normalization().sum()
         term3 = ((eta_0 - M - 1) / 2 * log_hat_Λ).sum()
         term4 = (eta * Tr_W0inv_W).sum() / 2
-        
-        E_val = term1 + term2 + term3 - term4
-        
-        return E_val
 
+        E_val = term1 + term2 + term3 - term4
+
+        return E_val
 
     def E5(self, r):
         """
@@ -208,7 +220,6 @@ class VBMixture:
         """
         terms = r * jnp.log(r)
         return jnp.nansum(terms)
-
 
     def E6(self, alpha):
         """
@@ -218,9 +229,8 @@ class VBMixture:
         term1 = (alpha - 1) * log_hat_π
         term2 = self.compute_log_C(alpha)
         E_val = term1.sum() + term2
-        
-        return E_val
 
+        return E_val
 
     def E7(self, X, beta, eta, W):
         """
@@ -234,10 +244,12 @@ class VBMixture:
         # Entropy of the Wishart distribution ∀ k
         H = wishart.entropy()
         E_val = log_hat_Λ / 2 + M * jnp.log(beta / (2 * jnp.pi)) / 2 - M / 2 - H
-        
+
         return E_val.sum()
 
-    def _gmm_lower_bound(self, X, r, alpha, beta, eta, m, W, alpha_0, beta_0, eta_0, m_0, W_0):
+    def _gmm_lower_bound(
+        self, X, r, alpha, beta, eta, m, W, alpha_0, beta_0, eta_0, m_0, W_0
+    ):
         """
         Compute the variational lower bound for the variational distribution of
         a mixture of gaussians.
@@ -251,9 +263,8 @@ class VBMixture:
         E5_val = self.E5(r)
         E6_val = self.E6(alpha)
         E7_val = self.E7(X, beta, eta, W)
-        return E1_val + E2_val + E3_val  + E4_val - E5_val - E6_val - E7_val
+        return E1_val + E2_val + E3_val + E4_val - E5_val - E6_val - E7_val
 
-    
     def fit(self, X, m_0, W_0, beta_0, alpha_0, eta_0, nits=100, store_hist=False):
         """
         Fit a Mixture of Gaussians using the a Variational approach.
@@ -286,14 +297,30 @@ class VBMixture:
         """
         lower_bound_hist = jnp.zeros(nits)
         steps = []
-        
+
         r_nk = self.compute_responsibilities(X, alpha_0, beta_0, eta_0, m_0, W_0)
         for it in range(nits):
-            alpha_k, beta_k, eta_k, m_k, W_k = self.posterior_params(X, r_nk, alpha_0, beta_0, eta_0, m_0, W_0)
+            alpha_k, beta_k, eta_k, m_k, W_k = self.posterior_params(
+                X, r_nk, alpha_0, beta_0, eta_0, m_0, W_0
+            )
             r_nk = self.compute_responsibilities(X, alpha_k, beta_k, eta_k, m_k, W_k)
 
-            lower_bound = self.gmm_lower_bound(X, r_nk, alpha_k, beta_k, eta_k, m_k, W_k, alpha_0, beta_0, eta_0, m_0, W_0)
-            lower_bound_hist = index_update(lower_bound_hist, it, lower_bound)
+            lower_bound = self.gmm_lower_bound(
+                X,
+                r_nk,
+                alpha_k,
+                beta_k,
+                eta_k,
+                m_k,
+                W_k,
+                alpha_0,
+                beta_0,
+                eta_0,
+                m_0,
+                W_0,
+            )
+            # lower_bound_hist = index_update(lower_bound_hist, it, lower_bound) #deprecated
+            lower_bound_hist = lower_bound_hist.at[it].set(lower_bound)
 
             if store_hist:
                 values = {
@@ -305,7 +332,7 @@ class VBMixture:
                     "W": W_k,
                 }
                 steps.append(values)
-        
+
         self.alpha_k = alpha_k
         self.beta_k = beta_k
         self.eta_k = eta_k
@@ -316,4 +343,3 @@ class VBMixture:
         self.fitted = True
 
         return steps
-
