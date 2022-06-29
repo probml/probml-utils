@@ -86,13 +86,13 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, pad_inches = 0.0, *args
         os.makedirs(fig_dir)
 
     fname_full = os.path.join(fig_dir, f_name)
+    fname_full = _get_fig_name(fname_full)
 
     print("saving image to {}".format(fname_full))
     if tight_layout:
         plt.tight_layout(pad=pad_inches)
     print("Figure size:", plt.gcf().get_size_inches())
 
-    fname_full = _get_fig_name(fname_full)
     if tight_bbox:
         # This changes the size of the figure
         plt.savefig(fname_full, pad_inches=pad_inches, bbox_inches="tight", *args, **kwargs)

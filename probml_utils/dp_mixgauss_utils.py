@@ -1,4 +1,5 @@
 import jax.numpy as jnp
+
 from jax import jit, vmap, random, lax
 from jax.scipy.special import gammaln
 from jax.numpy.linalg import slogdet, solve
