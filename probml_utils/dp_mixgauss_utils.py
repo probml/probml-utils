@@ -1,9 +1,7 @@
 import jax.numpy as jnp
-
 from jax import jit, vmap, random, lax
 from jax.scipy.special import gammaln
 from jax.numpy.linalg import slogdet, solve
-
 
 # The implementation of Normal Inverse Wishart distribution is directly copied from 
 # the note book of Scott Linderman: 
@@ -118,9 +116,7 @@ class MultivariateNormalFullCovariance(tfd.MultivariateNormalFullCovariance):
     def sufficient_statistics(datapoint):
         return (1.0, datapoint, jnp.outer(datapoint, datapoint), 1.0)
 
-
 ##############################################################################
-
 
 def dp_mixgauss_sample(key, num_of_samples, dp_concentration, dp_base_measure):
     """Sampling from the Dirichlet process (DP) Gaussian mixture model.
@@ -164,7 +160,6 @@ def dp_mixgauss_sample(key, num_of_samples, dp_concentration, dp_base_measure):
     cluster_covs = cluster_parameters['Sigma'][cluster_indices]
     samples = vmap(random.multivariate_normal)(subkeys, cluster_means, cluster_covs)
     return cluster_parameters, cluster_indices, samples
-
 
 
 @jit
@@ -411,4 +406,3 @@ def dp_mixgauss_gibbs(key, num_of_samples, data, concentration, prior_params):
     # Sampling
     carry, samples_of_cluster_assign = lax.scan(update_per_itr, carry, subkeys)
     return samples_of_cluster_assign
-
