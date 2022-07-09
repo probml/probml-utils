@@ -14,14 +14,19 @@ def arviz_trace_from_states(states, info, burn_in=0):
     trace: arviz trace object
     """
     if isinstance(states.position, jnp.DeviceArray):  #if states.position is array of samples 
-        samples = {"samples":jnp.swapaxes(states.position,0,1)}
-        divergence = jnp.swapaxes(info.is_divergent, 0, 1)
-     
+        ndims = jnp.ndim(states.position)
+        if ndims > 1:
+            samples = {"samples":jnp.swapaxes(states.position,0,1)}
+            divergence = jnp.swapaxes(info.is_divergent, 0, 1)
+        else:
+            samples = jnp.swapaxes(states.position,0,1)
+            divergence = info.is_divergent, 0, 1
+        
     else: # if states.position is dict 
         samples = {}        
         for param in states.position.keys():
             ndims = len(states.position[param].shape)
-            if ndims == 2:
+            if ndims >= 2:
                 samples[param] = jnp.swapaxes(states.position[param], 0, 1)[:, burn_in:]  # swap n_samples and n_chains
                 divergence = jnp.swapaxes(info.is_divergent[burn_in:], 0, 1)
 
@@ -33,7 +38,6 @@ def arviz_trace_from_states(states, info, burn_in=0):
     trace_sample_stats = az.convert_to_inference_data({"diverging": divergence}, group="sample_stats")
     trace = az.concat(trace_posterior, trace_sample_stats)
     return trace
-
 def inference_loop_multiple_chains(rng_key, kernel, initial_states, num_samples, num_chains):
     '''
     returns dict: {"states": states, "info": info}
