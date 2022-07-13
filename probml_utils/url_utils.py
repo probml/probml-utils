@@ -2,7 +2,7 @@ import jax
 import requests
 from typing import Any
 from TexSoup import TexSoup
-import regex as re
+import re
 import os
 import pandas as pd
 import firebase_admin

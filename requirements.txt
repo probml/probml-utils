@@ -1,16 +1,4 @@
-jaxlib
-jax
 jaxopt
-jupyter
-numpy
-matplotlib
-scikit-learn
-scipy
-graphviz
 distrax
-pandas
 TexSoup
-firebase_admin
-regex
 umap-learn
-arviz

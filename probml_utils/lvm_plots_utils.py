@@ -1,17 +1,9 @@
 import os
 
-try:
-    import umap
-except ModuleNotFoundError:
-    os.system("pip install -qq umap-learn")
-    import umap
+import umap
 from typing import Callable, Tuple
 
-try:
-    import torch
-except ModuleNotFoundError:
-    os.system("pip install -qq torch")
-    import torch
+import torch
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
