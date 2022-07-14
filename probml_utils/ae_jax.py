@@ -1,5 +1,6 @@
 from typing import Tuple
 from functools import partial
+import os
 
 import jax
 import jax.numpy as jnp
@@ -8,7 +9,7 @@ import numpy as np
 try:
     import flax
 except ModuleNotFoundError:
-    %pip install -qq flax   # pyright: ignore
+    os.system("pip install -qq flax")
     import flax
 import flax.linen as nn
 from flax.training import train_state
@@ -16,7 +17,7 @@ from flax.training import train_state
 try:
     import optax
 except ModuleNotFoundError:
-    %pip install -qq optax  # pyright: ignore
+    os.system("pip install -qq optax")
     import optax
 
 
