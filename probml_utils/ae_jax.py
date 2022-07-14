@@ -31,18 +31,24 @@ class Encoder(nn.Module):
     @nn.compact
     def __call__(self, X, training):
         X = nn.Conv(8, (3, 3), strides=2, padding=1)(X)
+        print('Conv1', X.shape)
         X = jax.nn.relu(X)
         X = nn.Conv(16, (3, 3), strides=2, padding=1)(X)
+        print('Conv2', X.shape)
         X = nn.BatchNorm(use_running_average=not training)(X)
         X = jax.nn.relu(X)
         X = nn.Conv(32, (3, 3), strides=2, padding=0)(X)
+        print('Conv3', X.shape)
         X = jax.nn.relu(X)
 
         X = X.reshape((-1, np.prod(X.shape[-3:])))
+        print('reshape', X.shape)
 
         X = nn.Dense(128)(X)
+        print('Dense1', X.shape)
         X = jax.nn.relu(X)
         X = nn.Dense(self.embedding_dim)(X)
+        print('Dense2', X.shape)
 
         return X
 
@@ -52,23 +58,29 @@ class Decoder(nn.Module):
 
     @nn.compact
     def __call__(self, X, training):
-        H, W, _ = self.output_dim
+        H, W, C = self.output_dim
         H, W = H - 25, W - 25  # subtract 25 due to convolution
 
         X = nn.Dense(128)(X)
+        print('Dense2', X.shape)
         X = jax.nn.relu(X)
+        print('Dense1', X.shape)
         X = nn.Dense(H * W * 32)(X)
         X = jax.nn.relu(X)
 
         X = X.reshape((-1, H, W, 32))
+        print('reshape', X.shape)
 
         X = nn.ConvTranspose(16, (3, 3), strides=(2, 2), padding=2)(X)
+        print('ConvTranspose3', X.shape)
         X = nn.BatchNorm(use_running_average=not training)(X)
         X = jax.nn.relu(X)
         X = nn.ConvTranspose(8, (3, 3), strides=(2, 2), padding=((1, 2), (1, 2)))(X)
+        print('ConvTranspose2', X.shape)
         X = nn.BatchNorm(use_running_average=not training)(X)
         X = jax.nn.relu(X)
-        X = nn.ConvTranspose(1, (3, 3), strides=(2, 2), padding=((1, 2), (1, 2)))(X)
+        X = nn.ConvTranspose(C, (3, 3), strides=(2, 2), padding=((1, 2), (1, 2)))(X)
+        print('ConvTranspose1', X.shape)
         X = jax.nn.sigmoid(X)
 
         return X
