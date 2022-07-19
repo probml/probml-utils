@@ -63,7 +63,8 @@ def is_latexify_enabled():
 def _get_fig_name(fname_full):
     fname_full = fname_full.replace("_latexified","")
     LATEXIFY = "LATEXIFY" in os.environ
-    extention = "_latexified.pdf" if LATEXIFY else ".png"
+    #extention = "_latexified.pdf" if LATEXIFY else ".png"
+    extention = "_latexified.pdf" if LATEXIFY else ".pdf"
     if fname_full[-4:] in [".png", ".pdf", ".jpg"]:
         fname = fname_full[:-4]
         warnings.warn(
