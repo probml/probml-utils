@@ -1,4 +1,6 @@
 import jax.numpy as jnp
+from jax.scipy.special import digamma
+from jax.nn import softmax
 from jax import jit, vmap, random, lax
 from jax.scipy.special import gammaln
 from jax.numpy.linalg import slogdet, solve
@@ -406,3 +408,80 @@ def dp_mixgauss_gibbs(key, num_of_samples, data, concentration, prior_params):
     # Sampling
     carry, samples_of_cluster_assign = lax.scan(update_per_itr, carry, subkeys)
     return samples_of_cluster_assign
+
+
+def _expect_natural_params(natural_hyperparam1, natural_hyperparam2, fixed_covariance):
+    hyper_mean = natural_hyperparam1
+    hyper_covariance = natural_hyperparam2 * fixed_covariance
+    expect_nat1 = jnp.linalg.solve(fixed_covariance, hyper_mean)
+    expect_nat2 = jnp.trace(jnp.linalg.solve(fixed_covariance, 
+                                             hyper_covariance+jnp.outer(hyper_mean, hyper_mean)))
+    return expect_nat1, expect_nat2 
+
+
+def dp_mixgauss_mfvi(key, num_itr, trunc_level, suff_stats, prior_params, fixed_covariance):
+    """Mean field variational inference (VI) for Dirichlet process (DP) Gaussian mixture model.
+    
+    The target is the joint posterior distribution of the stick-breaking items of the DP, 
+    and the cluter assignment variable of each observation. 
+    Using the conjugate prior, the parameters of the approximate distribution 
+    are updated using coordinate ascent algorithm with closed forms in each iteration.
+
+    Args:
+        num_of_itr (_type_): _description_
+        trunc_level (_type_): _description_
+        data (_type_): _description_
+        
+    Returns:
+
+    """
+    num_obs, dim_obs = suff_stats.shape
+    dp_concentration, *base_natural_params = prior_params
+    base_prior_1, base_prior_2 = base_natural_params
+    
+    def single_vi_update(category_params, _):
+        # Update the parameters of the posterior beta distribution Beta(beta_param_1, beta_param_2)
+        # for the brick length of each stick-breaking term
+        beta_param_1 = 1 + jnp.sum(category_params, axis=0)
+        _c = dp_concentration * jnp.ones(trunc_level) 
+        beta_param_2 = _c.at[:-1].add(jnp.sum(jnp.flip(jnp.cumsum(jnp.flip(category_params[:,1:], axis=1), axis=1), axis=1), axis=0))
+        
+        # Update the distribution of the base measure for each term of of the stick-breaking 
+        base_param_1 = base_prior_1 + jnp.einsum('nt,nd -> td', category_params, suff_stats)
+        base_param_2 = base_prior_2 + jnp.sum(category_params, axis=0)
+        
+        # Compute quantities for updating the categorical distribution for the cluster assignment
+        # of each datum
+        digam_1 = digamma(beta_param_1)
+        digam_2 = digamma(beta_param_2)
+        digam_1sum2 = digamma(beta_param_1 + beta_param_2)
+        expect_stick = digam_1 - digam_1sum2
+        expect_one_minus_stick = digam_2 - digam_1sum2
+        sum_expect_one_minus_stick = jnp.cumsum(jnp.concatenate((jnp.zeros(1), expect_one_minus_stick[:-1])))
+        expect_natural_0, expect_natural_1 = vmap(_expect_natural_params, (0, 0, None))(base_param_1, 
+                                                                                        base_param_2, 
+                                                                                        fixed_covariance)
+        
+        # Update the parameters of the categorical distribution for cluster assignment of each datum
+        logits_category_params = expect_stick + sum_expect_one_minus_stick \
+                                 + suff_stats @ expect_natural_0.T - expect_natural_1 
+        category_params = softmax(logits_category_params, axis=1)
+        
+        # The parameters of the mean field approximate distribution q
+        params_q = {'sb_weights_params': (beta_param_1, beta_param_2),
+                    'sb_base_params': (base_param_1, base_param_2),
+                    'cluster_assign_params': category_params}
+        
+        return category_params, params_q
+    
+    # Initialize the categorical distribution for the cluster assignment of each data 
+    # via truncated stick breaking 
+    bricks = jr.beta(key, 1, dp_concentration, shape=(num_obs, trunc_level-1))
+    _b0 = jnp.concatenate((bricks, jnp.ones((num_obs, 1))), axis=1)
+    _b1 = jnp.concatenate((jnp.ones((num_obs, 1)), jnp.cumprod(1.-bricks, axis=1)), axis=1)
+    category_params = _b0 * _b1
+    
+    # Train
+    _, params_q = lax.scan(single_vi_update, category_params, None, num_itr)
+    
+    return params_q
