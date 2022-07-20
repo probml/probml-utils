@@ -38,11 +38,13 @@ def arviz_trace_from_states(states, info, burn_in=0):
     trace_sample_stats = az.convert_to_inference_data({"diverging": divergence}, group="sample_stats")
     trace = az.concat(trace_posterior, trace_sample_stats)
     return trace
+
 def inference_loop_multiple_chains(rng_key, kernel, initial_states, num_samples, num_chains):
     '''
-    returns dict: {"states": states, "info": info}
+    returns (states, info)
     Visit this page for more info: https://blackjax-devs.github.io/blackjax/examples/Introduction.html
     '''
+    @jax.jit
     def one_step(states, rng_key):
         keys = jax.random.split(rng_key, num_chains)
         states, infos = jax.vmap(kernel)(keys, states) 

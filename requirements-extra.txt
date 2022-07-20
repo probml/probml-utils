@@ -1,13 +1,3 @@
-firebase_admin
-arviz
-jupyter
-numpy
-pandas
-matplotlib
-scikit-learn
-scipy
-jaxlib
-jax
 pgmpy  # torch will be installed by this
 imageio
 tensorflow
@@ -15,4 +5,3 @@ einops
 torchvision
 umap-learn
 pytorch_lightning
-graphviz
