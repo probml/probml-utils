@@ -1,4 +1,3 @@
-from logging import warning
 import os
 import matplotlib.pyplot as plt
 import warnings
@@ -55,15 +54,16 @@ def latexify(
 
 
 def is_latexify_enabled():
-    '''
+    """
     returns true if LATEXIFY environment variable is set
-    '''
+    """
     return "LATEXIFY" in os.environ
 
+
 def _get_fig_name(fname_full):
-    fname_full = fname_full.replace("_latexified","")
+    fname_full = fname_full.replace("_latexified", "")
     LATEXIFY = "LATEXIFY" in os.environ
-    #extention = "_latexified.pdf" if LATEXIFY else ".png"
+    # extention = "_latexified.pdf" if LATEXIFY else ".png"
     extention = "_latexified.pdf" if LATEXIFY else ".pdf"
     if fname_full[-4:] in [".png", ".pdf", ".jpg"]:
         fname = fname_full[:-4]
@@ -74,7 +74,10 @@ def _get_fig_name(fname_full):
         fname = fname_full
     return fname + extention
 
-def savefig(f_name, tight_layout=True, tight_bbox=False, pad_inches = 0.0, *args, **kwargs):
+
+def savefig(
+    f_name, tight_layout=True, tight_bbox=False, pad_inches=0.0, *args, **kwargs
+):
     if len(f_name) == 0:
         return
     if "FIG_DIR" not in os.environ:
@@ -96,10 +99,12 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, pad_inches = 0.0, *args
 
     if tight_bbox:
         # This changes the size of the figure
-        plt.savefig(fname_full, pad_inches=pad_inches, bbox_inches="tight", *args, **kwargs)
+        plt.savefig(
+            fname_full, pad_inches=pad_inches, bbox_inches="tight", *args, **kwargs
+        )
     else:
         plt.savefig(fname_full, pad_inches=pad_inches, *args, **kwargs)
-    
+
     if "DUAL_SAVE" in os.environ:
         if fname_full.endswith(".pdf"):
             fname_full = fname_full[:-4] + ".png"
@@ -107,6 +112,8 @@ def savefig(f_name, tight_layout=True, tight_bbox=False, pad_inches = 0.0, *args
             fname_full = fname_full[:-4] + ".pdf"
         if tight_bbox:
             # This changes the size of the figure
-            plt.savefig(fname_full, pad_inches=pad_inches, bbox_inches="tight", *args, **kwargs)
+            plt.savefig(
+                fname_full, pad_inches=pad_inches, bbox_inches="tight", *args, **kwargs
+            )
         else:
             plt.savefig(fname_full, pad_inches=pad_inches, *args, **kwargs)
