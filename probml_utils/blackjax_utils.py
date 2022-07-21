@@ -19,20 +19,24 @@ def arviz_trace_from_states(states, info, burn_in=0):
             samples = {"samples":jnp.swapaxes(states.position,0,1)}
             divergence = jnp.swapaxes(info.is_divergent, 0, 1)
         else:
-            samples = jnp.swapaxes(states.position,0,1)
-            divergence = info.is_divergent, 0, 1
+            samples = states.position
+            divergence = info.is_divergent
         
     else: # if states.position is dict 
-        samples = {}        
+        samples = {}      
         for param in states.position.keys():
             ndims = len(states.position[param].shape)
             if ndims >= 2:
                 samples[param] = jnp.swapaxes(states.position[param], 0, 1)[:, burn_in:]  # swap n_samples and n_chains
-                divergence = jnp.swapaxes(info.is_divergent[burn_in:], 0, 1)
-
-            if ndims == 1:
-                divergence = info.is_divergent
+            elif ndims == 1:
                 samples[param] = states.position[param]
+            
+        divergence = info.is_divergent  
+        ndims_div = len(divergence.shape)
+        if ndims_div >= 2:
+            divergence = jnp.swapaxes(divergence, 0, 1)[:, burn_in:]
+        elif ndims_div == 1:
+            divergence = info.is_divergent
                 
     trace_posterior = az.convert_to_inference_data(samples)
     trace_sample_stats = az.convert_to_inference_data({"diverging": divergence}, group="sample_stats")
