@@ -159,3 +159,42 @@ def decode(state, Z):
     decoded = state.apply_fn(variables, Z, False, method=VAE.decode)
 
     return decoded
+
+
+def mnist_demo():
+    from torch import Generator
+    from torch.utils.data import DataLoader
+    import torchvision.transforms as T
+    from torchvision.datasets import MNIST
+
+
+    batch_size = 256
+    latent_dim = 20
+    hidden_channels = (32, 64, 128, 256, 512)
+    lr = 1e-3
+    specimen = jnp.empty((32, 32, 1))
+    variational = True
+    beta = 1
+    target_epoch = 2
+
+    transform = T.Compose([T.Resize((32, 32)), T.ToTensor()])
+    mnist_train = MNIST("/tmp/torchvision", train=True, download=True, transform=transform)
+    generator = Generator().manual_seed(42)
+    loader = DataLoader(mnist_train, batch_size, shuffle=True, generator=generator)
+
+    key = jax.random.PRNGKey(42)
+    state = create_train_state(key, variational, beta, latent_dim, hidden_channels, lr, specimen)
+
+    for epoch in range(target_epoch):
+        loss_train = 0
+        for X, _ in loader:
+            image = jnp.array(X).reshape((-1, *specimen.shape))
+            key, key_Z = jax.random.split(key)
+            state, loss = train_step(state, key_Z, image)
+            loss_train += loss
+
+        print(f"Epoch {epoch + 1}: train loss {loss_train}")
+
+
+if __name__ == "__main__":
+    mnist_demo()
