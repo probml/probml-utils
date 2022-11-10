@@ -20,6 +20,7 @@ import flax
 from flax.training import train_state
 
 import optax
+import jaxopt
 import distrax
 
 
@@ -54,6 +55,9 @@ def logprior_fn(params, sigma):
     flat_params = jnp.concatenate([jnp.ravel(a) for a in leaves])
     return jnp.sum(distrax.Normal(0, sigma).log_prob(flat_params))
 
+def l2_regularizer(params, l2reg):
+    sqnorm = jaxopt.tree_util.tree_l2_norm(params, squared=True)
+    return 0.5 * l2reg * sqnorm
 
 @partial(jax.jit, static_argnums=(1,2))
 def get_batch_train_ixs(key, num_train, batch_size):
@@ -68,7 +72,7 @@ def get_batch_train_ixs(key, num_train, batch_size):
 
 class NeuralNetClassifier:
     def __init__(self, network, key, nclasses, *,  l2reg=1e-5, standardize = True,
-                optimizer = 'lbfgs', batch_size=128, max_iter=100, num_epochs=10, print_every=0):
+                optimizer = 'adam+warmup', batch_size=128, max_iter=100, num_epochs=10, print_every=0):
         # optimizer is one of {'adam+warmup'} or an optax object
         self.nclasses = nclasses
         self.network = network
@@ -116,7 +120,6 @@ class NeuralNetClassifier:
     def fit_optax(self, key, X, y): 
         # based on https://github.com/google/flax/blob/main/examples/mnist/train.py
         ntrain = X.shape[0] # full dataset
-
         @jax.jit
         def train_step(state, Xb, yb):
             # loss = -1/N [ (sum_n log p(yn|xn, theta)) + log p(theta) ]
@@ -124,10 +127,12 @@ class NeuralNetClassifier:
             # We assume yb is integer, not one-hot.
             def loss_fn(params):
                 logits = state.apply_fn({'params': params}, Xb)
-                loglik = jnp.mean(distrax.Categorical(logits).log_prob(yb))
-                sigma = np.sqrt(1/self.l2reg)
-                logjoint = loglik + (1/ntrain)*logprior_fn(params, sigma)
-                loss = -logjoint
+                #loglik = jnp.mean(distrax.Categorical(logits).log_prob(yb))
+                #sigma = np.sqrt(1/self.l2reg)
+                #logjoint = loglik + (1/ntrain)*logprior_fn(params, sigma)
+                #loss = -logjoint
+                loss = optax.softmax_cross_entropy_with_integer_labels(logits, yb)
+                loss = jnp.mean(loss) + l2_regularizer(params, self.l2reg)
                 return loss, logits
             grad_fn = jax.value_and_grad(loss_fn, has_aux=True)
             (loss, logits), grads = grad_fn(state.params)
