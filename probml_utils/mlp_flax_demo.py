@@ -1,5 +1,3 @@
-# to show output from the 'tests', run with 
-# pytest skax_test_mlp.py  -rP
 
 from functools import partial
 import matplotlib.pyplot as plt
@@ -29,6 +27,7 @@ import flax
 
 import jaxopt
 import optax
+
 
 from probml_utils.mlp_flax import MLPNetwork, NeuralNetClassifier
 
@@ -93,7 +92,7 @@ def compare_bayes(optimizer, name, nhidden, scale_factor):
     nhidden = nhidden + (nclasses,) # set nhidden() to get logistic regression
     network = MLPNetwork(nhidden)
     mlp = NeuralNetClassifier(network, key, nclasses, l2reg=1e-5, optimizer = optimizer, 
-            batch_size=32, num_epochs=30, print_every=0)  
+            batch_size=32, num_epochs=30, print_every=1)  
     mlp.fit(Xtrain, ytrain)
 
     yprobs_train_mlp = np.array(mlp.predict(Xtrain))
@@ -115,25 +114,21 @@ def compare_bayes(optimizer, name, nhidden, scale_factor):
     #    delta_train, delta_test))
     print('\n')
 
-def test_mlp_vs_bayes_sf1():
-    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(), scale_factor=1)
-    compare_bayes("adam+warmup", "adam+warmup", nhidden=(), scale_factor=1)
+def eval_mlp_on_gmm(sf):
+    # scale_factor = 5 means the class conditional densities have higher variance (more overlap)
+    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(), scale_factor=sf)
+    compare_bayes("adam+warmup", "adam+warmup", nhidden=(), scale_factor=sf)
 
-    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(10,), scale_factor=1)
-    compare_bayes("adam+warmup", "adam+warmup", nhidden=(10,), scale_factor=1)
+    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(10,), scale_factor=sf)
+    compare_bayes("adam+warmup", "adam+warmup", nhidden=(10,), scale_factor=sf)
 
-    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(10,10), scale_factor=1)
-    compare_bayes("adam+warmup", "adam+warmup", nhidden=(10,10), scale_factor=1)
+    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(10,10), scale_factor=sf)
+    compare_bayes("adam+warmup", "adam+warmup", nhidden=(10,10), scale_factor=sf)
 
 
-def test_mlp_vs_bayes_sf5():
-   # scale_factor = 5 means the class conditional densities have higher variance (more overlap)
 
-    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(), scale_factor=5)
-    compare_bayes("adam+warmup", "adam+warmup", nhidden=(), scale_factor=5)
+def main():
+    eval_mlp_on_gmm(sf=5)
 
-    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(10,), scale_factor=5)
-    compare_bayes("adam+warmup", "adam+warmup", nhidden=(10,), scale_factor=5)
-
-    compare_bayes(optax.adam(1e-3), "adam(1e-3)", nhidden=(10,10), scale_factor=5)
-    compare_bayes("adam+warmup", "adam+warmup", nhidden=(10,10), scale_factor=5)
+if __name__ == "__main__":
+    main()

@@ -151,7 +151,7 @@ class NeuralNetClassifier:
 
         # main loop
         state = train_state.TrainState.create(
-            apply_fn=self.network.apply, params=self.params, tx=self.optimizer)
+            apply_fn=self.network.apply, params=self.params['params'], tx=self.optimizer)
         for epoch in range(self.num_epochs):
             key, sub_key = jr.split(key)
             state, train_loss, train_accuracy = train_epoch(sub_key, state)
