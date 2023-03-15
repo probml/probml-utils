@@ -1,5 +1,6 @@
 # modified from
 # https://github.com/Paperspace/ml-in-a-box/blob/main/ml_in_a_box.sh
+# Also works for lambdalabs
 
 #!/usr/bin/env bash
 
