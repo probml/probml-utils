@@ -12,10 +12,14 @@ pip3 install --upgrade --user tensorflow tensorflow_probability
 
 # Add JAX
 
-pip3 install  "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_releases.html
+#pip3 install  "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_releases.html
+pip3 install --upgrade "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 
 pip3 install distrax optax
 
+# github
+git config --global user.email "murphyk@gmail.com"
+git config --global user.name "Kevin Murphy"
 
 # Add Other stuff
 pip3 install seaborn tdqm
