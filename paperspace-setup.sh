@@ -7,7 +7,7 @@
 
 # Upgrade Pytorch and TF and JAX
 
-#pip3 install --upgrade torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113
+pip3 install torch torchvision torchaudio
 
 #pip3 install --upgrade --user tensorflow tensorflow_probability
 
@@ -23,8 +23,7 @@ pip3 install -Uq tfp-nightly[jax]
 git config --global user.email "murphyk@gmail.com"
 git config --global user.name "Kevin Murphy"
 
-sudo snap install gh
-
+#sudo snap install gh
 #gh auth login  # paste personal access token
 
 # avoid having to paste PAT more than once per day
@@ -33,3 +32,4 @@ git config --global credential.helper 'cache --timeout 90000'
 
 # Other stuff
 pip3 install seaborn tdqm
+pip install jax-tqdm
