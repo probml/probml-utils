@@ -13,3 +13,4 @@ pandas
 TexSoup
 firebase_admin
 regex
+numpy>=1.23.5
