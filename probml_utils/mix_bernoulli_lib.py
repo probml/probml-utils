@@ -7,7 +7,7 @@ from jax.random import PRNGKey, uniform, split, permutation
 from jax.lax import scan
 from jax.scipy.special import expit, logit
 from jax.nn import softmax
-from jax.experimental import optimizers
+from jax.example_libraries import optimizers
 
 import distrax
 from distrax._src.utils import jittable
@@ -123,7 +123,9 @@ class BMM(jittable.Jittable):
             mu = jnp.sum(responsibility[:, None] * observations, axis=0) / norm_const
             return mu, norm_const
 
-        mus, ns = vmap(m_step_per_bernoulli, in_axes=(1))(self.responsibilities(observations))
+        mus, ns = vmap(m_step_per_bernoulli, in_axes=(1))(
+            self.responsibilities(observations)
+        )
         return ns / n_obs, mus
 
     def fit_em(self, observations, num_of_iters=10):
@@ -169,7 +171,9 @@ class BMM(jittable.Jittable):
         ll_hist, responsibility_hist = history
 
         ll_hist = jnp.append(ll_hist, self.expected_log_likelihood(observations))
-        responsibility_hist = jnp.vstack([responsibility_hist, jnp.array([self.responsibilities(observations)])])
+        responsibility_hist = jnp.vstack(
+            [responsibility_hist, jnp.array([self.responsibilities(observations)])]
+        )
 
         return ll_hist, responsibility_hist
 
@@ -254,7 +258,9 @@ class BMM(jittable.Jittable):
         loss, grads = value_and_grad(self.loss_fn)(params, batch)
         return opt_update(i, grads, opt_state), loss
 
-    def fit_sgd(self, observations, batch_size, rng_key=None, optimizer=None, num_epochs=1):
+    def fit_sgd(
+        self, observations, batch_size, rng_key=None, optimizer=None, num_epochs=1
+    ):
         """
         Fits the model using gradient descent algorithm with the given hyperparameters.
 
@@ -314,7 +320,11 @@ class BMM(jittable.Jittable):
             self.model = (softmax(mixing_coeffs), probs)
             self._probs = probs
 
-            return opt_state, (losses.mean(), *params, self.responsibilities(observations))
+            return opt_state, (
+                losses.mean(),
+                *params,
+                self.responsibilities(observations),
+            )
 
         epochs = split(rng_key, num_epochs)
         opt_state, history = scan(epoch_step, opt_state, epochs)
@@ -339,10 +349,14 @@ class BMM(jittable.Jittable):
             The path where the figure will be stored
         """
         if n_row * n_col != len(self.mixing_coeffs):
-            raise TypeError("The number of rows and columns does not match with the number of component distribution.")
+            raise TypeError(
+                "The number of rows and columns does not match with the number of component distribution."
+            )
         fig, axes = plt.subplots(n_row, n_col)
 
-        for (coeff, mean), ax in zip(zip(self.mixing_coeffs, self.probs), axes.flatten()):
+        for (coeff, mean), ax in zip(
+            zip(self.mixing_coeffs, self.probs), axes.flatten()
+        ):
             ax.imshow(mean.reshape(28, 28), cmap=plt.cm.gray)
             ax.set_title("%1.2f" % coeff)
             ax.axis("off")
