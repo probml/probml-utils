@@ -7,10 +7,9 @@ matplotlib
 scikit-learn
 scipy
 graphviz
-umap-learn
 distrax==0.1.3
+umap-learn
 pandas
 TexSoup
 firebase_admin
 regex
-numpy>=1.23.5
