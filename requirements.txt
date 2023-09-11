@@ -1,17 +1,17 @@
 umap-learn
-# numpy
-# arviz
-# jaxlib
-# jax
-# jaxopt
-# jupyter
-# numpy
-# matplotlib
-# scikit-learn
-# scipy
-# graphviz
+arviz
+jaxlib
+jax
+jaxopt
+jupyter
+numpy
+matplotlib
+scikit-learn
+scipy
+graphviz
 distrax==0.1.3
-# pandas
-# TexSoup
-# firebase_admin
-# regex
+pandas
+TexSoup
+firebase_admin
+regex
+numpy
